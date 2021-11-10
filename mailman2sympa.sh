@@ -26,7 +26,7 @@ for f in `cat $WDIR/mailman-lists` ; do
 		continue
 	fi
 	$MAILMAN_HOME/bin/dumpdb $mmdb > $WDIR/lists/$f
-        perl -pi -e 's/\\([0-3][0-7][0-7])/chr(oct($1))/eg;' $WDIR/lists/$f
+#        perl -pi -e 's/\\([0-3][0-7][0-7])/chr(oct($1))/eg;' $WDIR/lists/$f
 done
 
 echo
@@ -43,7 +43,10 @@ for l in `cat $WDIR/mailman-lists` ; do
 	./scripts/mm2s_config < $WDIR/lists/$l > $WDIR/$l.config
 	./scripts/mm2s_aliases $l >> $WDIR/aliases-sympa
 	./scripts/mm2s_admins < $WDIR/lists/$l >> $WDIR/csv/import_admins.csv
-	./scripts/mm2s_users < $WDIR/lists/$l >> $WDIR/csv/import_users.csv
+	./scripts/mm2s_users < $WDIR/lists/$l >> $WDIR/csv/import_users.tmp
+	# mailman users are created per list so filter out duplicated emails
+	# of course only one password will be used after but it's better than nothing
+	sort $WDIR/csv/import_users.tmp |sort -u -k1,1 -t';' > $WDIR/csv/import_users.csv
 	./scripts/mm2s_subscribers < $WDIR/lists/$l >> $WDIR/csv/import_subscribers.csv
 	./scripts/mm2s_blacklist < $WDIR/lists/$l > $WDIR/$l.blacklist
 
