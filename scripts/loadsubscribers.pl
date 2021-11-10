@@ -181,8 +181,10 @@ eval {
 	#
 	# Subscribers
 	#
+	# date_subscriber & update_subscriber (datetime) was obsoleted.
+	# Use date_epoch_subscriber & update_epoch_subscriber (int).
 	$query_subscribers	= qq!
-		INSERT INTO subscriber_table (list_subscriber, user_subscriber, comment_subscriber, date_subscriber, reception_subscriber, visibility_subscriber, robot_subscriber, subscribed_subscriber)
+		INSERT INTO subscriber_table (list_subscriber, user_subscriber, comment_subscriber, date_epoch_subscriber, reception_subscriber, visibility_subscriber, robot_subscriber, subscribed_subscriber)
 		     VALUES (?, ?, ?, ?, ?, ?, ?, 1)
 		!;
 	$sth_subscribers	= $dbhnew->prepare($query_subscribers);
@@ -210,9 +212,11 @@ eval {
 	#
 	# Admins
 	#
+	# date_admin & update_admin (datetime) was obsoleted.
+	# Use date_epoch_admin & update_epoch_admin (int).
 
 	$query_admins	= qq!
-		INSERT INTO admin_table (comment_admin, date_admin, list_admin, profile_admin, reception_admin, robot_admin, role_admin, subscribed_admin, update_admin, user_admin)
+		INSERT INTO admin_table (comment_admin, date_epoch_admin, list_admin, profile_admin, reception_admin, robot_admin, role_admin, subscribed_admin, update_epoch_admin, user_admin)
 		     VALUES (?, ?, ?, 'privileged', 'mail', ?, ?, 1, ?, ?)
 		!;
 	$sth_admins	= $dbhnew->prepare($query_admins);
