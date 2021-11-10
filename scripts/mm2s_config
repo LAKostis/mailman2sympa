@@ -22,9 +22,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-use lib 'lib';
-
-use mmparse;
+use JSON;
 
 my ($m_cfg, @s_cfg);
 
@@ -33,7 +31,7 @@ my ($m_cfg, @s_cfg);
 #
 {
    local $/=undef;
-   $m_cfg = mmparse(<STDIN>);
+   $m_cfg = decode_json <STDIN>;
 }
 
 my $list_name = lc($m_cfg->{real_name});
@@ -60,6 +58,7 @@ addlines(
 {  my $subject;
 
    $subject = $m_cfg->{description} || "\u$list_name mailing list";
+#   $subject = decode_json '"'.$subject.'"';
    addlines(
       "subject $subject",
    );

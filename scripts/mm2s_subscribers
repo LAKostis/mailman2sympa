@@ -22,8 +22,7 @@
 
 use lib 'lib';
 
-use mmparse;
-use JSON::PP;
+use JSON;
 
 my $m_cfg;
 
@@ -32,7 +31,7 @@ my $m_cfg;
 #
 {
    local $/=undef;
-   $m_cfg = mmparse(<STDIN>);
+   $m_cfg = decode_json <STDIN>;
 }
 
 my $list_name = lc($m_cfg->{real_name});
@@ -70,7 +69,6 @@ for my $user (sort keys %users) {
 
    if (defined $options) {	# actual subscriber
       $name = $m_cfg->{usernames}->{$user} || '';
-      $name = decode_json '"'.$name.'"';
       $vis = $options & $hide ? 'conceal' : 'noconceal';
 
       my $status = $m_cfg->{delivery_status}->{$user};
