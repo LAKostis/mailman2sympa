@@ -16,17 +16,16 @@ echo
 echo Picking up configuration of mailman lists
 
 for f in `cat $WDIR/mailman-lists` ; do
-	if [ -f $MAILMAN_VAR/lists/$f/config.pck ]; then
+	if [ -s $MAILMAN_VAR/lists/$f/config.pck ]; then
 		mmdb=$MAILMAN_VAR/lists/$f/config.pck
-	elif [ -f $MAILMAN_VAR/lists/$f/config.db ]; then
+	elif [ -s $MAILMAN_VAR/lists/$f/config.db ]; then
 		mmdb=$MAILMAN_VAR/lists/$f/config.db
 	else
 		echo "Warning list $f not found - skipping"
 		sed -i -e "/^$f\$/d" $WDIR/mailman-lists
 		continue
 	fi
-	$MAILMAN_HOME/bin/dumpdb $mmdb > $WDIR/lists/$f
-#        perl -pi -e 's/\\([0-3][0-7][0-7])/chr(oct($1))/eg;' $WDIR/lists/$f
+	./scripts/mm2s_unpickle.py "$mmdb" > $WDIR/lists/$f
 done
 
 echo
@@ -38,8 +37,15 @@ echo -n "" > $WDIR/csv/import_users.csv
 echo -n "" > $WDIR/csv/import_subscribers.csv
 
 for l in `cat $WDIR/mailman-lists` ; do
-	[ ! -d $EXPL/$l ] && mkdir $EXPL/$l
 
+	host_name=$(jq -r .host_name < $WDIR/lists/$l)
+	if [ -n "$host_name" -a "$DOMAIN" != "$host_name" ]; then
+	    echo "Skipping $l - domain doesn't match"
+	    continue
+	fi
+
+	[ ! -d $EXPL/$l ] && mkdir $EXPL/$l
+	
 	./scripts/mm2s_config < $WDIR/lists/$l > $WDIR/$l.config
 	./scripts/mm2s_aliases $l >> $WDIR/aliases-sympa
 	./scripts/mm2s_admins < $WDIR/lists/$l >> $WDIR/csv/import_admins.csv
@@ -49,11 +55,16 @@ for l in `cat $WDIR/mailman-lists` ; do
 	sort $WDIR/csv/import_users.tmp |sort -u -k1,1 -t';' > $WDIR/csv/import_users.csv
 	./scripts/mm2s_subscribers < $WDIR/lists/$l >> $WDIR/csv/import_subscribers.csv
 	./scripts/mm2s_blacklist < $WDIR/lists/$l > $WDIR/$l.blacklist
+	if jq -er .info < $WDIR/lists/$l >/dev/null; then
+		info=$(jq -r .info < $WDIR/lists/$l)
+		[ -n "$info" ] && printf '%s\n' "$info" > $WDIR/$l.info
+	fi
 
 	if [ -f $EXPL/$l/config ] ; then
 		echo "Skipping $l - config already exists"
 	else
 		mv $WDIR/$l.config $EXPL/$l/config
+		[ -s $WDIR/$l.info ] && mv $WDIR/$l.info $EXPL/$l/info
 	fi
 
 	if [ -s $WDIR/$l.blacklist ] ; then
