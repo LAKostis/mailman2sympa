@@ -23,6 +23,7 @@
 use lib 'lib';
 
 use mmparse;
+use JSON::PP;
 
 my $m_cfg;
 
@@ -69,6 +70,7 @@ for my $user (sort keys %users) {
 
    if (defined $options) {	# actual subscriber
       $name = $m_cfg->{usernames}->{$user} || '';
+      $name = decode_json '"'.$name.'"';
       $vis = $options & $hide ? 'conceal' : 'noconceal';
 
       my $status = $m_cfg->{delivery_status}->{$user};

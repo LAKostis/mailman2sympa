@@ -23,6 +23,7 @@
 use lib 'lib';
 
 use mmparse;
+use JSON::PP;
 
 my $m_cfg;
 
@@ -43,6 +44,7 @@ my %users = map {$_, 1}
 for my $user (sort keys %users) {
    my $name = $m_cfg->{usernames}->{$user} || '';
    my $pass = $m_cfg->{passwords}->{$user} || genpw();
+   $name = decode_json '"'.$name.'"';
    print "$user;$name;$pass\n";
 }
 
