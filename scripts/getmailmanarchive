@@ -32,7 +32,7 @@ for l in $1 ; do
 	for y in $YEARS  ; do
 		m=0
 		for mc in January February March April May June July August September October November December ; do
-			m=$[m+1]
+			m=${m+1}
 			month=`printf "%04d-%02d" $y $m`
 			mail=""
 			if [ -f $MAILMAN_VAR/archives/public/$l/${y}-${mc}.txt ] ; then
