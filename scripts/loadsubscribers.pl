@@ -32,6 +32,7 @@ use diagnostics;
 #
 use DBI qw(:sql_types);
 use POSIX qw(strftime);
+use Date::Parse qw(str2time);
 #
 # Variables
 #
@@ -196,7 +197,7 @@ eval {
 		$sth_subscribers->bind_param(1, $list, SQL_VARCHAR);
 		$sth_subscribers->bind_param(2, $user, SQL_VARCHAR);
 		$sth_subscribers->bind_param(3, $comment, SQL_VARCHAR);
-		$sth_subscribers->bind_param(4, $date, SQL_TIMESTAMP);
+		$sth_subscribers->bind_param(4, str2time($date), SQL_TIMESTAMP);
 		$sth_subscribers->bind_param(5, $reception, SQL_VARCHAR);
 		$sth_subscribers->bind_param(6, $visiblity, SQL_VARCHAR);
 		$sth_subscribers->execute();
@@ -221,8 +222,8 @@ eval {
 		!;
 	$sth_admins	= $dbhnew->prepare($query_admins);
 	$sth_admins->bind_param(4, $ENV{'DOMAIN'}, SQL_VARCHAR);
-	$sth_admins->bind_param(2, strftime("%F %T", localtime), SQL_TIMESTAMP);
-	$sth_admins->bind_param(6, strftime("%F %T", localtime), SQL_TIMESTAMP);
+	$sth_admins->bind_param(2, str2time(strftime("%F %T", localtime)), SQL_TIMESTAMP);
+	$sth_admins->bind_param(6, str2time(strftime("%F %T", localtime)), SQL_TIMESTAMP);
 
         $query_csv      = qq!
                 SELECT email_admin,role_admin,list_admin from admins
