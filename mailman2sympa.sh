@@ -83,7 +83,7 @@ if [ $CONVERT_ARCHIVE = "yes" ] ; then
 	echo
 	echo Converting Archives
 	for l in `cat $WDIR/mailman-lists` ; do
-	        host_name=$(jq -r .host_name < $WDIR/lists/$l)
+		host_name=$(jq -r .host_name < $WDIR/lists/$l)
 		if [ -n "$host_name" -a "$DOMAIN" != "$host_name" ]; then
 			echo "Skipping $l - domain doesn't match"
 			continue
