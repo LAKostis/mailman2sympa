@@ -18,7 +18,8 @@ GROUP=sympa
 # Where SYMPA has been installed
 #
 SYMPA_SMTPSCRIPTS=/usr/share/sympa/bin
-EXPL=/var/lib/sympa/lists_data
+# EXPL=/var/lib/sympa/list_data/<domain>
+EXPL=/var/lib/sympa/list_data
 
 #
 # Where Mailman has been installed
